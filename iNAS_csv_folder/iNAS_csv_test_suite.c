@@ -1,10 +1,11 @@
 #include <stdio.h> 
 #include <math.h> 
 #include <time.h> 
-#include "./include/k2c_include.h" 
+#include "../include/k2c_include.h" 
 #include "iNAS_csv.h" 
 
 float maxabs(k2c_tensor *tensor1, k2c_tensor *tensor2);
+int run_cifar();
 struct timeval GetTimeStamp(); 
  
 float test1_INPUT_input_array[3072] = {
@@ -6286,6 +6287,7 @@ clock_t t1 = clock();
 printf("Average time over 10 tests: %e s \n", 
  ((double)t1-t0)/(double)CLOCKS_PER_SEC/(double)10); 
 errors[0] = maxabs(&keras_FC_END_test1,&c_FC_END_test1); 
+printf("test 1 error: %e \n", errors[0]);
 errors[1] = maxabs(&keras_FC_END_test2,&c_FC_END_test2); 
 errors[2] = maxabs(&keras_FC_END_test3,&c_FC_END_test3); 
 errors[3] = maxabs(&keras_FC_END_test4,&c_FC_END_test4); 
@@ -6300,9 +6302,199 @@ for(size_t i=1; i< num_tests*num_outputs;i++){
 if (errors[i] > maxerror) { 
 maxerror = errors[i];}} 
 printf("Max absolute error for 10 tests: %e \n", maxerror);
+// run_cifar();
+// =========================================================
+unsigned char buffer[3073];
+float input_cifar[3072];
+FILE *ptr;
+
+// float c_FC_END_test1_array[10] = {0}; 
+// k2c_tensor c_FC_END_test1 = {&c_FC_END_test1_array[0],1,10,{10, 1, 1, 1, 1}}; 
+
+float c_FC_END_test_cifar_array[10] = {0};  
+k2c_tensor c_FC_END_test_cifar = {&c_FC_END_test_cifar_array[0],1,10,{10, 1, 1, 1, 1}}; 
+
+ptr = fopen("/home/johnson/dataset/cifar-10-batches-bin/data_batch_1.bin","rb");  // r for read, b for binary
+
+fread(buffer,sizeof(buffer),1,ptr); // read 10 bytes to our buffer
+
+for(int i = 0; i<3073; i++)
+    printf("%u ", buffer[i]);
+printf("\n");
+
+for(int i = 1; i<3073; i++){
+    input_cifar[i-1] = (float)buffer[i];
+}
+
+// for(int i = 0; i<3072; i++)
+//     printf("%e ", input_cifar[i]);
+// printf("\n");
+
+k2c_tensor input_cifar_all = {&input_cifar[0],3,3072,{32,32, 3, 1, 1}};
+
+iNAS_csv(&input_cifar_all,&c_FC_END_test_cifar,
+CONV_0_output_array,CONV_0_kernel_array,
+CONV_0_bias_array,CONV_1_output_array,
+CONV_1_kernel_array,CONV_1_bias_array,
+CONV_2_output_array,CONV_2_kernel_array,
+CONV_2_bias_array,CONV_3_output_array,
+CONV_3_kernel_array,CONV_3_bias_array,
+CONV_4_output_array,CONV_4_kernel_array,CONV_4_bias_array,
+GAVGPOOL_0_output_array,FC_END_kernel_array,FC_END_bias_array); 
+
+// output the result
+float x =0;
+float y = 0;
+for(size_t i=0; i<c_FC_END_test_cifar.numel; i++){
+    printf("%e ", c_FC_END_test_cifar.array[i]);
+}
+printf("\n");
+
+// =========================================================
+// =========================================================
+unsigned char buffer_1[3073];
+float input_cifar_1[3072];
+
+// float c_FC_END_test1_array[10] = {0}; 
+// k2c_tensor c_FC_END_test1 = {&c_FC_END_test1_array[0],1,10,{10, 1, 1, 1, 1}}; 
+
+float c_FC_END_test_cifar_array_1[10] = {0};  
+k2c_tensor c_FC_END_test_cifar_1 = {&c_FC_END_test_cifar_array_1[0],1,10,{10, 1, 1, 1, 1}}; 
+
+
+fread(buffer_1,sizeof(buffer_1),1,ptr); // read 10 bytes to our buffer
+
+// for(int i = 0; i<3073; i++)
+//     printf("%u ", buffer_1[i]);
+// printf("\n");
+
+for(int i = 1; i<3073; i++){
+    input_cifar_1[i-1] = (float)buffer_1[i];
+}
+
+// for(int i = 0; i<3072; i++)
+//     printf("%e ", input_cifar_1[i]);
+// printf("\n");
+
+k2c_tensor input_cifar_all_1 = {&input_cifar_1[0],3,3072,{32,32, 3, 1, 1}};
+
+iNAS_csv(&input_cifar_all_1,&c_FC_END_test_cifar_1,
+CONV_0_output_array,CONV_0_kernel_array,
+CONV_0_bias_array,CONV_1_output_array,
+CONV_1_kernel_array,CONV_1_bias_array,
+CONV_2_output_array,CONV_2_kernel_array,
+CONV_2_bias_array,CONV_3_output_array,
+CONV_3_kernel_array,CONV_3_bias_array,
+CONV_4_output_array,CONV_4_kernel_array,CONV_4_bias_array,
+GAVGPOOL_0_output_array,FC_END_kernel_array,FC_END_bias_array); 
+
+// output the result
+x =0;
+y = 0;
+for(size_t i=0; i<c_FC_END_test_cifar_1.numel; i++){
+    printf("%e ", c_FC_END_test_cifar_1.array[i]);
+}
+printf("\n");
+
+// =========================================================
+// =========================================================
+unsigned char buffer_2[3073];
+float input_cifar_2[3072];
+
+// float c_FC_END_test1_array[10] = {0}; 
+// k2c_tensor c_FC_END_test1 = {&c_FC_END_test1_array[0],1,10,{10, 1, 1, 1, 1}}; 
+
+float c_FC_END_test_cifar_array_2[10] = {0};  
+k2c_tensor c_FC_END_test_cifar_2 = {&c_FC_END_test_cifar_array_2[0],1,10,{10, 1, 1, 1, 1}}; 
+
+
+fread(buffer_2,sizeof(buffer_2),1,ptr); // read 10 bytes to our buffer
+
+// for(int i = 0; i<3073; i++)
+//     printf("%u ", buffer_2[i]);
+// printf("\n");
+
+for(int i = 1; i<3073; i++){
+    input_cifar_2[i-1] = (float)buffer_2[i];
+}
+
+// for(int i = 0; i<3072; i++)
+//     printf("%e ", input_cifar_2[i]);
+// printf("\n");
+
+k2c_tensor input_cifar_all_2 = {&input_cifar_2[0],3,3072,{32,32, 3, 1, 1}};
+
+iNAS_csv(&input_cifar_all_2,&c_FC_END_test_cifar_2,
+CONV_0_output_array,CONV_0_kernel_array,
+CONV_0_bias_array,CONV_1_output_array,
+CONV_1_kernel_array,CONV_1_bias_array,
+CONV_2_output_array,CONV_2_kernel_array,
+CONV_2_bias_array,CONV_3_output_array,
+CONV_3_kernel_array,CONV_3_bias_array,
+CONV_4_output_array,CONV_4_kernel_array,CONV_4_bias_array,
+GAVGPOOL_0_output_array,FC_END_kernel_array,FC_END_bias_array); 
+
+// output the result
+x =0;
+y = 0;
+for(size_t i=0; i<c_FC_END_test_cifar_2.numel; i++){
+    printf("%e ", c_FC_END_test_cifar_2.array[i]);
+}
+printf("\n");
+
+// =========================================================
+// =========================================================
+unsigned char buffer_3[3073];
+float input_cifar_3[3072];
+
+// float c_FC_END_test1_array[10] = {0}; 
+// k2c_tensor c_FC_END_test1 = {&c_FC_END_test1_array[0],1,10,{10, 1, 1, 1, 1}}; 
+
+float c_FC_END_test_cifar_array_3[10] = {0};  
+k2c_tensor c_FC_END_test_cifar_3 = {&c_FC_END_test_cifar_array_3[0],1,10,{10, 1, 1, 1, 1}}; 
+
+
+fread(buffer_3,sizeof(buffer_3),1,ptr); // read 10 bytes to our buffer
+
+// for(int i = 0; i<3073; i++)
+//     printf("%u ", buffer_2[i]);
+// printf("\n");
+
+for(int i = 1; i<3073; i++){
+    input_cifar_3[i-1] = (float)buffer_3[i];
+}
+
+// for(int i = 0; i<3072; i++)
+//     printf("%e ", input_cifar_2[i]);
+// printf("\n");
+
+k2c_tensor input_cifar_all_3 = {&input_cifar_3[0],3,3072,{32,32, 3, 1, 1}};
+
+iNAS_csv(&input_cifar_all_3,&c_FC_END_test_cifar_3,
+CONV_0_output_array,CONV_0_kernel_array,
+CONV_0_bias_array,CONV_1_output_array,
+CONV_1_kernel_array,CONV_1_bias_array,
+CONV_2_output_array,CONV_2_kernel_array,
+CONV_2_bias_array,CONV_3_output_array,
+CONV_3_kernel_array,CONV_3_bias_array,
+CONV_4_output_array,CONV_4_kernel_array,CONV_4_bias_array,
+GAVGPOOL_0_output_array,FC_END_kernel_array,FC_END_bias_array); 
+
+// output the result
+x =0;
+y = 0;
+for(size_t i=0; i<c_FC_END_test_cifar_3.numel; i++){
+    printf("%e ", c_FC_END_test_cifar_3.array[i]);
+}
+printf("\n");
+
+// =========================================================
+
+
 iNAS_csv_terminate(CONV_0_output_array,CONV_0_kernel_array,CONV_0_bias_array,CONV_1_output_array,CONV_1_kernel_array,CONV_1_bias_array,CONV_2_output_array,CONV_2_kernel_array,CONV_2_bias_array,CONV_3_output_array,CONV_3_kernel_array,CONV_3_bias_array,CONV_4_output_array,CONV_4_kernel_array,CONV_4_bias_array,GAVGPOOL_0_output_array,FC_END_kernel_array,FC_END_bias_array); 
 if (maxerror > 1e-05) { 
-return 1;} 
+return 1;}
+
 return 0;
 } 
 
@@ -6317,4 +6509,8 @@ float maxabs(k2c_tensor *tensor1, k2c_tensor *tensor2){
     y = fabsf(tensor1->array[i]-tensor2->array[i]);
     if (y>x) {x=y;}}
     return x;}
+
+int run_cifar(){
+    
+}
 

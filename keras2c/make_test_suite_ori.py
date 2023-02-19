@@ -15,9 +15,6 @@ import tensorflow as tf
 import subprocess
 tf.compat.v1.disable_eager_execution()
 
-from keras.datasets import cifar10
-from keras.utils import to_categorical
-
 __author__ = "Rory Conlin"
 __copyright__ = "Copyright 2020, Rory Conlin"
 __license__ = "MIT"
@@ -76,33 +73,18 @@ def make_test_suite(model, function_name, malloc_vars, num_tests=10, stateful=Fa
     s += 'float maxabs(k2c_tensor *tensor1, k2c_tensor *tensor2);\n'
     s += 'struct timeval GetTimeStamp(); \n \n'
     file.write(s)
-
-    # CIFAR-10 input generate to x_test
-    num_class = 10
-    # batchsize = 128
-    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-    x_train = x_train.astype('float16') / 255.
-    x_test = x_test.astype('float16') / 255.
-    y_train = to_categorical(y_train, num_class)
-    y_test = to_categorical(y_test, num_class)
-    x_train = x_train.reshape(50000,32,32,3)
-
     for i in range(num_tests):
         if i == num_tests//2 and stateful:
             model.reset_states()
+        # generate random input and write to file
         ct = 0
         while True:
             rand_inputs = []
             for j, _ in enumerate(model_inputs):
-                rand_input = x_train[j]
+                rand_input = 4*np.random.random(input_shape[j]) - 2
                 if not stateful:
                     rand_input = rand_input[np.newaxis, ...]
                 rand_inputs.insert(j, rand_input)
-
-
-            print(len(rand_inputs))
-            print(len(rand_inputs))
-            print(len(rand_inputs[0][0]))
                 # make predictions
             outputs = model.predict(rand_inputs)
             if np.isfinite(outputs).all():

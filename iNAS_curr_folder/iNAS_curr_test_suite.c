@@ -42,7 +42,7 @@ iNAS_curr_initialize(&CONV_0_output_array,&CONV_0_kernel_array,&CONV_0_bias_arra
 
     unsigned int input_cifar_float32[3072];
     unsigned short input_cifar_float16[3072];
-    float input_cifar[3027];
+    float input_cifar[3072];
 
     // unsigned short input_cifar_float16[3072];
     FILE *ptr;
